@@ -2,9 +2,12 @@ import java.util.Scanner;
 
 public class BuhApplication {
     private Scanner scanner;
+    private ReportService service;
     public void run() {
         System.out.println("Введите команду");
         scanner = new Scanner(System.in);
+        service = new ReportService();
+
         while (true) {
             printMenu();
             String line = scanner.nextLine();
@@ -14,9 +17,12 @@ public class BuhApplication {
                 return;
             } else if (line.equals("1")) {
                 System.out.println("Начали считать все месячные отчёты");
-                ReportService service = new ReportService();
                 service.loadMonthReports();
                 System.out.println("Завершили подсчёт всех месячных отчётов");
+            } else if (line.equals("4")) {
+                System.out.println("Начали выводить информацию о всех месячных отчётах");
+                service.printMonthReports();
+                System.out.println("Завершили вывод информации о всех месячных отчётах");
             } else {
                 System.out.println("Неизвестная команда");
             }
