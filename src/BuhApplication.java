@@ -16,13 +16,25 @@ public class BuhApplication {
             if (line.isEmpty()) {
                 return;
             } else if (line.equals("1")) {
-                System.out.println("Начали считать все месячные отчёты");
+                System.out.println("Начали считывать все месячные отчёты");
                 service.loadMonthReports();
-                System.out.println("Завершили подсчёт всех месячных отчётов");
+                System.out.println("Завершили считывание всех месячных отчётов");
+            } else if (line.equals("2")) {
+                System.out.println("Начали считывать все годовые отчёты");
+                service.loadYearReports();
+                System.out.println("Завершили считывание всех годовых отчётов");
+            } else if (line.equals("3")) {
+                System.out.println("Начали сверку отчётов");
+                // service.();
+                System.out.println("Завершили сверку отчётов");
             } else if (line.equals("4")) {
                 System.out.println("Начали выводить информацию о всех месячных отчётах");
                 service.printMonthReports();
                 System.out.println("Завершили вывод информации о всех месячных отчётах");
+            } else if (line.equals("5")) {
+                System.out.println("Начали вывод информации о годовом отчёте");
+                service.printYearReports();
+                System.out.println("Завершили вывод информации о годовом отчёте");
             } else {
                 System.out.println("Неизвестная команда");
             }
