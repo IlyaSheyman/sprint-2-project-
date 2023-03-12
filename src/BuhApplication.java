@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class BuhApplication {
     private Scanner scanner;
     private ReportService service;
-    public void run() {
+    public void run() { // реализация меню
         System.out.println("Введите команду");
         scanner = new Scanner(System.in);
         service = new ReportService();
@@ -16,32 +16,27 @@ public class BuhApplication {
             if (line.isEmpty()) {
                 return;
             } else if (line.equals("1")) {
-                System.out.println("Начали считывать все месячные отчёты");
                 service.loadMonthReports();
-                System.out.println("Завершили считывание всех месячных отчётов");
+                System.out.println("Считывание всех месячных отчётов завершено!");
             } else if (line.equals("2")) {
-                System.out.println("Начали считывать все годовые отчёты");
                 service.loadYearReports();
-                System.out.println("Завершили считывание всех годовых отчётов");
+                System.out.println("Считывание всех годовых отчётов завершено!");
             } else if (line.equals("3")) {
-                System.out.println("Начали сверку отчётов");
-                // service.();
-                System.out.println("Завершили сверку отчётов");
+                System.out.println("Сверка отчетов: ");
+                service.checkReports();
             } else if (line.equals("4")) {
-                System.out.println("Начали выводить информацию о всех месячных отчётах");
+                System.out.println("Информация о всех месячных отчётах:");
                 service.printMonthReports();
-                System.out.println("Завершили вывод информации о всех месячных отчётах");
             } else if (line.equals("5")) {
-                System.out.println("Начали вывод информации о годовом отчёте");
+                System.out.println("Информация о годовом отчёте:");
                 service.printYearReports();
-                System.out.println("Завершили вывод информации о годовом отчёте");
             } else {
                 System.out.println("Неизвестная команда");
             }
         }
     }
 
-    private void printMenu() {
+    private void printMenu() { // меню
         System.out.println("Меню:");
         System.out.println("1 - Считать все месячные отчёты");
         System.out.println("2 - Считать годовой отчёт");

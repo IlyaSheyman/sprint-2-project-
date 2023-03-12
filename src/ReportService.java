@@ -1,21 +1,18 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 public class ReportService {
 
     Storage storage = new Storage();
 
-    public void loadMonthReports() {
+    public void loadMonthReports() { // считывание месячных отчетов
         String path = "./sprint-2-project-/resources/m.20210";
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i < 5; i++) {
             ArrayList<Item> items = loadMonthReport(path + i + ".csv");
             storage.saveMonthReport(2021, i, items);
-            System.out.println(storage.monthReports);
         }
     }
 
@@ -31,9 +28,9 @@ public class ReportService {
         return items;
     }
 
-    public void printMonthReports() {
+    public void printMonthReports() { // печать информации о месячных отчетах
         for (int i = 1; i < storage.monthReports.size(); i++) {
-            System.out.println("Месяц: " + getMonthName(i));
+            System.out.println("Месяц: " + storage.getMonthName(i));
             Item maxProfit = storage.getMaxProfit(i);
             System.out.println("Максимальный доход. Товар: " + maxProfit.name + ". Сумма: " + maxProfit.getTotal());
             Item maxExpense = storage.getMaxExpense(i);
@@ -41,25 +38,13 @@ public class ReportService {
         }
     }
 
-    private String getMonthName(int month) {
-        String monthName = "";
-        if (month == 1) {
-            monthName = "Январь";
-        } else if (month == 2) {
-            monthName = "Февраль";
-        } else if (month == 3) {
-            monthName = "Март";
-        }
-        return monthName;
-    }
-
 // работа с месяцем окончена. Далее идет работа с годом.
-    public void loadYearReports() {
+
+    public void loadYearReports() { // метод для считывания годовых отчетов
         String path = "./sprint-2-project-/resources/y.202";
         for (int i = 1; i < 2; i++) {
             ArrayList<Year> info = loadYearReport(path + i + ".csv");
             storage.saveYearReport(i, info);
-            System.out.println(storage.yearReports); // для отладки
         }
     }
 
@@ -75,29 +60,65 @@ public class ReportService {
         return info;
     }
 
-    List<String> readFileContents(String path) {
+
+    public void printYearReports() { // метод для печати информации по годовым отчетам
+        for (Integer year : storage.yearReports.keySet()) {
+            ArrayList<Year> info = storage.yearReports.get(year);
+            HashMap<Integer, Long> profit = storage.getMonthProfit(info);
+            for (Integer month : profit.keySet()) {
+                System.out.println("Месяц: " + storage.getMonthName(month) + ". Прибыль за месяц: " + profit.get(month));
+            }
+            System.out.println("Год: " + getYearName(year) + ". Средний доход за все месяцы в году: " + storage.getAveragedIncome(info));
+            System.out.println("Год: " + getYearName(year) + ". Средний расход за все месяцы в году: " + storage.getAveragedConsumption(info));
+        }
+    }
+
+    private String getYearName(int year) { // метод для получения названия года
+        String yearName = "202" + year;
+        return yearName;
+    }
+
+    public void checkReports() { // метод для сверки отчетов
+        for (Integer year : storage.yearReports.keySet()) {
+            ArrayList<Year> info = storage.yearReports.get(year); // передали конкретный месяц
+            HashMap<Integer, Long> monthsIncome = new HashMap<>();
+            HashMap<Integer, Long> monthConsumption = new HashMap<>(); // Integer - номер месяца, Long - сумма
+
+            System.out.println("Исходя из отчетов по месяцам: ");
+
+            for (int i = 1; i < storage.monthReports.size(); i++) {
+                System.out.println("Доход за " + storage.getMonthName(i) + " составил " + storage.getMonthIncome(i));
+                monthsIncome.put(i, storage.getMonthIncome(i));
+                System.out.println("Расход за " + storage.getMonthName(i) + " составил " + storage.getMonthConsumption(i));
+                monthConsumption.put(i, storage.getMonthConsumption(i));
+            }
+
+            ArrayList<Long> incomes = new ArrayList<>();
+            ArrayList<Long> consump = new ArrayList<>();
+
+            for (Year year1 : info) {
+                if (!year1.expense) {
+                    incomes.add(year1.amount);
+                } else {
+                    consump.add(year1.amount);
+                }
+            }
+            System.out.println("Исходя из отчетов по году: ");
+
+            for (int i = 0; i < incomes.size(); i++) {
+                System.out.println("Доход за " + storage.getMonthName(i+1) + " составил " + incomes.get(i));
+                System.out.println("Расход за " + storage.getMonthName(i+1) + " составил " + consump.get(i));
+            }
+            storage.compare(monthsIncome, monthConsumption, incomes, consump);
+        }
+    }
+
+    List<String> readFileContents(String path) { // метод для считывания файлов
         try {
             return Files.readAllLines(Path.of(path));
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
+            //System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
             return Collections.emptyList();
         }
-    }
-
-    public void printYearReports() {
-        for (Integer year : storage.yearReports.keySet()) {
-            System.out.println(storage.yearReports.get(year));
-            ArrayList<Year> info = storage.yearReports.get(year);
-            for (Year year1: info) {
-                System.out.println("Месяц: " + getMonthName(year1.month) + ". Прибыль: " + storage.getMonthProfit(year1.month, year1.expense, year1.amount));
-            }
-            System.out.println("Год: " + getYearName(year) + ". Средний доход за все месяцы в году: " + storage.getAveragedIncome(info));
-            System.out.println("Год: " + getYearName(year) + ". Средний расход за все месяцы в год: " + storage.getAveragedConsumption(info));
-        }
-    }
-
-    private String getYearName(int year) {
-        String yearName = "202" + year;
-        return yearName;
     }
 }
